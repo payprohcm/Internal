@@ -113,7 +113,7 @@
 
   .params-bar {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     padding: 18px 28px;
     background: #FAFBFD;
@@ -201,6 +201,7 @@
     .summary-table tr.total-line td { font-size: 13px; }
     .summary-table tr.grand-line td { font-size: 14px; }
     .disclaimer { font-size: 8.5px; padding: 10px 20px 14px; }
+    .warning-box, #planWarning { display: none !important; }
   }
 </style>
 </head>
@@ -217,7 +218,7 @@
       <img src="logo.png" alt="Payroll Processors" class="logo-img">
     </div>
     <div class="quote-title">
-      <h1>Payroll Service Quote</h1>
+      <h1>Service Quote</h1>
       <div class="dates">
         <div>Date: <b id="dateOut"></b></div>
         <div>Exp. Date: <b id="expDateOut"></b></div>
@@ -227,18 +228,24 @@
 
   <div class="info-grid">
     <div class="info-box">
-      <h3>Prepared By</h3>
+      <div style="display:flex;align-items:center;gap:10px;margin:0 0 10px;">
+        <h3 style="margin:0;">Prepared By</h3>
+        <select id="repPrefill" class="no-print" style="font-size:11.5px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;background:#fff;color:var(--text);font-family:inherit;">
+          <option value="">- Sales Rep Pre-Fill -</option>
+          <option value="mark">Mark Cohen</option>
+          <option value="dan">Dan Bratta</option>
+        </select>
+      </div>
       <div class="field-row"><label>Rep Name</label><input id="repName" type="text"></div>
       <div class="field-row"><label>Phone</label><input id="repPhone" type="text"></div>
       <div class="field-row"><label>Email</label><input id="repEmail" type="email"></div>
       <div class="static-line muted" style="margin-top:10px;">1401 Branding Ave, STE 275<br>Downers Grove, IL 60515</div>
-      <div class="static-line muted">https://www.payrollprocessors.com/</div>
+      <div class="static-line muted">https://www.payprohcm.com/</div>
     </div>
     <div class="info-box">
       <h3>Prepared For</h3>
       <div class="field-row"><label>Company Name</label><input id="clientName" type="text"></div>
-      <div class="field-row"><label>Street Address</label><input id="clientStreet" type="text"></div>
-      <div class="field-row"><label>City, State, Zip</label><input id="clientCityStateZip" type="text"></div>
+      <div class="field-row"><label>Company Address</label><input id="clientStreet" type="text"></div>
     </div>
   </div>
 
@@ -254,16 +261,8 @@
         <option>Quarterly</option>
       </select>
     </div>
-    <div class="field-row"><label># Employees</label><input id="eeCount" type="number" min="0" value="0"></div>
-    <div class="field-row"><label># 1099s</label><input id="count1099" type="number" min="0" value="0"></div>
+    <div class="field-row"><label>Company Size (#EEs &amp; 1099s)</label><input id="eeCount" type="number" min="0" value="0"></div>
     <div class="field-row"><label># States</label><input id="stateCount" type="number" min="0" value="1"></div>
-    <div class="field-row"><label>Payroll Service Plan</label>
-      <select id="planSelect">
-        <option value="">(Select)</option>
-        <option value="Basic">Basic</option>
-        <option value="Enhanced">Enhanced</option>
-      </select>
-    </div>
   </div>
 
   <div class="section cat-picker no-print">
@@ -349,7 +348,7 @@
 </div>
 
 <script>
-const CATALOG = [{"name": "Basic Plan", "category": "Payroll Service Plans", "basicEligible": true, "enhancedEligible": false, "billingFrequency": "Every Pay", "unitType": "Per Active EE w/ Flat", "recurringQtySource": "EE_1099_MINUS5", "setupQtySource": "EE_1099_X52", "rates": {"wkFlat": 35.0, "wkUnit": 2.75, "bwFlat": 48.0, "bwUnit": 3.75, "smFlat": 52.0, "smUnit": 4.5, "moFlat": 58.0, "moUnit": 6.0, "qtrFlat": 175.0, "qtrUnit": 10.2, "yrFlat": null, "yrUnit": null, "otFlat": NaN, "otUnit": NaN}, "notes": "First 5 EEs exempt; Yearly payroll freq not eligible for this plan", "setup": {"unitType": "Per EEx52", "flat": 250.0, "perUnit": 0.25, "notes": null}}, {"name": "Enhanced Plan", "category": "Payroll Service Plans", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE w/ Flat", "recurringQtySource": "EE_1099_MINUS5", "setupQtySource": "EE_1099_X52", "rates": {"wkFlat": 45.0, "wkUnit": 3.25, "bwFlat": 62.0, "bwUnit": 4.75, "smFlat": 67.0, "smUnit": 5.5, "moFlat": 75.0, "moUnit": 7.5, "qtrFlat": null, "qtrUnit": null, "yrFlat": null, "yrUnit": null, "otFlat": NaN, "otUnit": NaN}, "notes": "First 5 EEs exempt; Quarterly/Yearly payroll freq not eligible for this plan", "setup": {"unitType": "Per EEx52", "flat": 500.0, "perUnit": 0.25, "notes": null}}, {"name": "Additional State(s) Tax Payment & Filing", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per State", "recurringQtySource": "STATES_MINUS1", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 15.0, "bwFlat": NaN, "bwUnit": 15.0, "smFlat": NaN, "smUnit": 15.0, "moFlat": NaN, "moUnit": 15.0, "qtrFlat": NaN, "qtrUnit": 15.0, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "First state exempt", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "W-2s/1099s", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Year End", "unitType": "Per Form w/ Flat", "recurringQtySource": "EE_1099", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": 75.0, "yrUnit": 6.0, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "State Tax Registration (Middesk)", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Registration", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": 500.0}, "notes": "For both IL WIT and SUI combined", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Garnishments/Third-Party Payments", "category": "Payroll Add-Ons", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active Garnishment/TP", "recurringQtySource": "MANUAL", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 3.0, "bwFlat": NaN, "bwUnit": 3.0, "smFlat": NaN, "smUnit": 3.0, "moFlat": NaN, "moUnit": 3.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Worker's Comp Reporting", "category": "Payroll Add-Ons", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "FLAT", "rates": {"wkFlat": 4.62, "wkUnit": NaN, "bwFlat": 10.0, "bwUnit": NaN, "smFlat": 10.0, "smUnit": NaN, "moFlat": 20.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 0.0, "perUnit": 150.0, "notes": "For Setups >1 Hour, otherwise no charge"}}, {"name": "General Ledger Reporting", "category": "Payroll Add-Ons", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "FLAT", "rates": {"wkFlat": 7.5, "wkUnit": NaN, "bwFlat": 15.0, "bwUnit": NaN, "smFlat": 15.0, "smUnit": NaN, "moFlat": 30.0, "moUnit": NaN, "qtrFlat": 90.0, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 250.0, "perUnit": 150.0, "notes": "Flat fee only for basic setups (2 hours or less), then per hour rate for each addl."}}, {"name": "Certified Payroll Reporting", "category": "Payroll Add-Ons", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "HOURS", "rates": {"wkFlat": 7.5, "wkUnit": NaN, "bwFlat": 15.0, "bwUnit": NaN, "smFlat": 15.0, "smUnit": NaN, "moFlat": 30.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per Hour w/ Flat", "flat": 500.0, "perUnit": 175.0, "notes": null}}, {"name": "Union Reporting", "category": "Payroll Add-Ons", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "HOURS", "rates": {"wkFlat": 7.5, "wkUnit": NaN, "bwFlat": 15.0, "bwUnit": NaN, "smFlat": 15.0, "smUnit": NaN, "moFlat": 30.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per Hour w/ Flat", "flat": 150.0, "perUnit": 150.0, "notes": null}}, {"name": "Courier - UDS (Chicago)", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 15.35, "wkUnit": NaN, "bwFlat": 15.35, "bwUnit": NaN, "smFlat": 15.35, "smUnit": NaN, "moFlat": 15.35, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "USPS Priority - Full Package", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 14.35, "wkUnit": NaN, "bwFlat": 14.35, "bwUnit": NaN, "smFlat": 14.35, "smUnit": NaN, "moFlat": 14.35, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "USPS - Full Package", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 5.0, "wkUnit": NaN, "bwFlat": 5.0, "bwUnit": NaN, "smFlat": 5.0, "smUnit": NaN, "moFlat": 5.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "USPS - Individual EEs", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per each live check", "recurringQtySource": "MANUAL", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 1.0, "bwFlat": NaN, "bwUnit": 1.0, "smFlat": NaN, "smUnit": 1.0, "moFlat": NaN, "moUnit": 1.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "FedEx Overnight", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 50.0, "wkUnit": NaN, "bwFlat": 50.0, "bwUnit": NaN, "smFlat": 50.0, "smUnit": NaN, "moFlat": 50.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "UPS Next Day", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 40.0, "wkUnit": NaN, "bwFlat": 40.0, "bwUnit": NaN, "smFlat": 40.0, "smUnit": NaN, "moFlat": 40.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "UPS Ground", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 14.35, "wkUnit": NaN, "bwFlat": 14.35, "bwUnit": NaN, "smFlat": 14.35, "smUnit": NaN, "moFlat": 14.35, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "iSolved Time", "category": "Time & Labor", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Per Timecard EE w/ Flat", "recurringQtySource": "EE_ONLY", "setupQtySource": "EE_ONLY", "rates": {"wkFlat": 13.85, "wkUnit": 0.9, "bwFlat": 30.0, "bwUnit": 1.95, "smFlat": 30.0, "smUnit": 1.95, "moFlat": 60.0, "moUnit": 3.9, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per EE", "flat": 350.0, "perUnit": 18.75, "notes": null}}, {"name": "Hardware Clock", "category": "Time & Labor", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Clock (See Notes)", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "MANUAL", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "Use iSolved's Timeclock Pricing in PartnerHub (+Submit Order Form)", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Scheduling", "category": "Time & Labor", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE after minimum", "recurringQtySource": "EE_ONLY", "setupQtySource": "EE_ONLY", "rates": {"wkFlat": 23.0, "wkUnit": 1.1077, "bwFlat": 50.0, "bwUnit": 2.4, "smFlat": 50.0, "smUnit": 2.4, "moFlat": 100.0, "moUnit": 4.8, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per EE", "flat": 250.0, "perUnit": 15.5, "notes": null}}, {"name": "Geofencing", "category": "Time & Labor", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "FLAT", "rates": {"wkFlat": 12.0, "wkUnit": NaN, "bwFlat": 25.0, "bwUnit": NaN, "smFlat": 25.0, "smUnit": NaN, "moFlat": 50.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 150.0, "perUnit": NaN, "notes": null}}, {"name": "Time Off Tracking", "category": "Time & Labor", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "FLAT", "rates": {"wkFlat": 7.5, "wkUnit": NaN, "bwFlat": 15.0, "bwUnit": NaN, "smFlat": 15.0, "smUnit": NaN, "moFlat": 30.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 50.0, "perUnit": NaN, "notes": null}}, {"name": "Benefits Administration", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE w/ Flat", "recurringQtySource": "EE_ONLY", "setupQtySource": "FLAT", "rates": {"wkFlat": 5.75, "wkUnit": 0.92, "bwFlat": 11.54, "bwUnit": 1.85, "smFlat": 12.5, "smUnit": 2.0, "moFlat": 25.0, "moUnit": 4.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 650.0, "perUnit": NaN, "notes": null}}, {"name": "Benefits Administration Annual Maintenance", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "One-Time (Annual)", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 250.0, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "ACA Monitoring & Reporting", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE", "recurringQtySource": "EE_ONLY", "setupQtySource": "FLAT", "rates": {"wkFlat": NaN, "wkUnit": 0.5, "bwFlat": NaN, "bwUnit": 1.05, "smFlat": NaN, "smUnit": 1.05, "moFlat": NaN, "moUnit": 2.17, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per Company", "flat": 300.0, "perUnit": NaN, "notes": null}}, {"name": "ACA 1094/1095Cs", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Year End", "unitType": "Per Form", "recurringQtySource": "MANUAL", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": 100.0, "yrUnit": 6.0, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Retirement Integration (Payroll Integrations) Tier 1", "category": "Benefits Administration", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "1st Pay of Month", "unitType": "Per Active EE (Tiered) 0-25", "recurringQtySource": "TIERED", "setupQtySource": "NONE", "rates": {"wkFlat": 11.5385, "wkUnit": NaN, "bwFlat": 23.08, "bwUnit": NaN, "smFlat": 25.0, "smUnit": NaN, "moFlat": 50.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Retirement Integration (Payroll Integrations) Tier 2", "category": "Benefits Administration", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "1st Pay of Month", "unitType": "Per Active EE (Tiered) 26-50", "recurringQtySource": "TIERED", "setupQtySource": "NONE", "rates": {"wkFlat": 17.3077, "wkUnit": NaN, "bwFlat": 34.6154, "bwUnit": NaN, "smFlat": 37.5, "smUnit": NaN, "moFlat": 75.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Retirement Integration (Payroll Integrations) Tier 3", "category": "Benefits Administration", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "1st Pay of Month", "unitType": "Per Active EE (Tiered) 51-100", "recurringQtySource": "TIERED", "setupQtySource": "NONE", "rates": {"wkFlat": 23.0769, "wkUnit": NaN, "bwFlat": 46.1538, "bwUnit": NaN, "smFlat": 50.0, "smUnit": NaN, "moFlat": 100.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Retirement Integration (Payroll Integrations) Tier 4", "category": "Benefits Administration", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "1st Pay of Month", "unitType": "Per Active EE (Tiered) 101+", "recurringQtySource": "TIERED", "setupQtySource": "NONE", "rates": {"wkFlat": 34.6154, "wkUnit": NaN, "bwFlat": 69.2308, "bwUnit": NaN, "smFlat": 75.0, "smUnit": NaN, "moFlat": 150.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Employee Navigator Integration", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE", "recurringQtySource": "EE_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 0.46, "bwFlat": NaN, "bwUnit": 0.92, "smFlat": NaN, "smUnit": 1.0, "moFlat": NaN, "moUnit": 2.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "COBRA Administration (iSolved Benefit Services)", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE", "recurringQtySource": "EE_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 0.23, "bwFlat": NaN, "bwUnit": 0.46, "smFlat": NaN, "smUnit": 0.5, "moFlat": NaN, "moUnit": 1.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "FSA/HSA (iSolved Benefit Services)", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "N/A - iSolved Bills Directly To Client", "unitType": null, "recurringQtySource": "BILLED_DIRECTLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Perform Small Business (Basic Performance Reviews)", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay/Yearly (See Notes)", "unitType": "Per Active EE", "recurringQtySource": "EE_ONLY", "setupQtySource": "HOURS", "rates": {"wkFlat": NaN, "wkUnit": 0.39, "bwFlat": NaN, "bwUnit": 0.77, "smFlat": NaN, "smUnit": 0.84, "moFlat": NaN, "moUnit": 1.67, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "Requires Add-on form submission to iSolved; Minimum 1-year term required. Billing dependent on recurrence. Annual Reviews Only - Charged once per year upfront. Recurring Reviews (Non-Annual) charged monthly.", "setup": {"unitType": "Per Hour (1 Hr Min Charge) if we are setting it up", "flat": NaN, "perUnit": 150.0, "notes": null}}, {"name": "Attract & Hire (iSolved ATS)", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "N/A - iSolved Bills Directly To Client", "unitType": null, "recurringQtySource": "BILLED_DIRECTLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "Requires Add-on form submission to iSolved", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Custom Onboarding", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 500.0, "perUnit": NaN, "notes": null}}, {"name": "Offboarding", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE ", "recurringQtySource": "EE_ONLY", "setupQtySource": "FLAT", "rates": {"wkFlat": NaN, "wkUnit": 0.24, "bwFlat": NaN, "bwUnit": 0.48, "smFlat": NaN, "smUnit": 0.53, "moFlat": NaN, "moUnit": 1.05, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 250.0, "perUnit": NaN, "notes": null}}, {"name": "Expense Management", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per EE with Expenses after minimum", "recurringQtySource": "MANUAL", "setupQtySource": "FLAT", "rates": {"wkFlat": 7.5, "wkUnit": 0.46, "bwFlat": 13.85, "bwUnit": 0.92, "smFlat": 15.0, "smUnit": 1.0, "moFlat": 30.0, "moUnit": 2.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "Requires Add-on form submission to iSolved; 25 employee minimum", "setup": {"unitType": "Per Company", "flat": 500.0, "perUnit": NaN, "notes": null}}, {"name": "Custom Reports (Report Writer) - Basic", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 250.0, "otUnit": 250.0}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Custom Reports (Report Writer) - Advanced", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 500.0, "otUnit": 500.0}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Custom Workflows", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 150.0, "otUnit": 150.0}, "notes": "If we are configuring/updating workflows that will take time (complex)", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Custom Imports", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 150.0, "otUnit": 150.0}, "notes": "If we are creating the import file and not the client. Otherwise, client can be provided with template and create the file themselves at no charge.", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Data Transmissions (FTP)", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Transmission", "recurringQtySource": "MANUAL", "setupQtySource": "FLAT", "rates": {"wkFlat": 6.0, "wkUnit": NaN, "bwFlat": 12.0, "bwUnit": NaN, "smFlat": 12.0, "smUnit": NaN, "moFlat": 25.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per Transmission", "flat": NaN, "perUnit": 250.0, "notes": null}}, {"name": "Paperless", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 0, "wkUnit": 0, "bwFlat": 0, "bwUnit": 0, "smFlat": 0, "smUnit": 0, "moFlat": 0, "moUnit": 0, "qtrFlat": 0, "qtrUnit": 0, "yrFlat": 0, "yrUnit": 0, "otFlat": 0, "otUnit": 0}, "notes": "No physical delivery \u2014 client receives payroll electronically at no charge", "setup": {"unitType": null, "flat": null, "perUnit": null, "notes": null}}, {"name": "Quarterly Returns", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Quarterly Filing", "unitType": "Per State", "recurringQtySource": "STATES_MINUS1", "setupQtySource": "NONE", "rates": {"wkFlat": null, "wkUnit": null, "bwFlat": null, "bwUnit": null, "smFlat": null, "smUnit": null, "moFlat": null, "moUnit": null, "qtrFlat": 35.95, "qtrUnit": 11.56, "yrFlat": null, "yrUnit": null, "otFlat": null, "otUnit": null}, "notes": "Auto-triggered when client has more than 1 state; first state excluded", "setup": {"unitType": null, "flat": null, "perUnit": null, "notes": null}}];
+const CATALOG = [{"name": "Basic Plan", "category": "Payroll Service Plans", "basicEligible": true, "enhancedEligible": false, "billingFrequency": "Every Pay", "unitType": "Per Active EE w/ Flat", "recurringQtySource": "EE_1099_MINUS5", "setupQtySource": "EE_1099_X52", "rates": {"wkFlat": 35.0, "wkUnit": 2.75, "bwFlat": 48.0, "bwUnit": 3.75, "smFlat": 52.0, "smUnit": 4.5, "moFlat": 58.0, "moUnit": 6.0, "qtrFlat": 175.0, "qtrUnit": 10.2, "yrFlat": null, "yrUnit": null, "otFlat": NaN, "otUnit": NaN}, "notes": "First 5 EEs exempt; Yearly payroll freq not eligible for this plan", "setup": {"unitType": "Per EEx52", "flat": 250.0, "perUnit": 0.25, "notes": null}}, {"name": "Enhanced Plan", "category": "Payroll Service Plans", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE w/ Flat", "recurringQtySource": "EE_1099_MINUS5", "setupQtySource": "EE_1099_X52", "rates": {"wkFlat": 45.0, "wkUnit": 3.25, "bwFlat": 62.0, "bwUnit": 4.75, "smFlat": 67.0, "smUnit": 5.5, "moFlat": 75.0, "moUnit": 7.5, "qtrFlat": null, "qtrUnit": null, "yrFlat": null, "yrUnit": null, "otFlat": NaN, "otUnit": NaN}, "notes": "First 5 EEs exempt; Quarterly/Yearly payroll freq not eligible for this plan", "setup": {"unitType": "Per EEx52", "flat": 500.0, "perUnit": 0.25, "notes": null}}, {"name": "Additional State(s) Tax Payment & Filing", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per State", "recurringQtySource": "STATES_MINUS1", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 15.0, "bwFlat": NaN, "bwUnit": 15.0, "smFlat": NaN, "smUnit": 15.0, "moFlat": NaN, "moUnit": 15.0, "qtrFlat": NaN, "qtrUnit": 15.0, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "First state exempt", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "W-2s/1099s", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Year End", "unitType": "Per Form w/ Flat", "recurringQtySource": "EE_1099", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": 75.0, "yrUnit": 6.0, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Tax Registration", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Registration", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": 500.0}, "notes": "For both IL WIT and SUI combined", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Garnishments/Third-Party Payments", "category": "Payroll Add-Ons", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active Garnishment/TP", "recurringQtySource": "MANUAL", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 3.0, "bwFlat": NaN, "bwUnit": 3.0, "smFlat": NaN, "smUnit": 3.0, "moFlat": NaN, "moUnit": 3.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Worker's Comp Reporting", "category": "Payroll Add-Ons", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "FLAT", "rates": {"wkFlat": 4.62, "wkUnit": NaN, "bwFlat": 10.0, "bwUnit": NaN, "smFlat": 10.0, "smUnit": NaN, "moFlat": 20.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 0.0, "perUnit": 150.0, "notes": "For Setups >1 Hour, otherwise no charge"}}, {"name": "General Ledger Reporting", "category": "Payroll Add-Ons", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "FLAT", "rates": {"wkFlat": 7.5, "wkUnit": NaN, "bwFlat": 15.0, "bwUnit": NaN, "smFlat": 15.0, "smUnit": NaN, "moFlat": 30.0, "moUnit": NaN, "qtrFlat": 90.0, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 250.0, "perUnit": 150.0, "notes": "Flat fee only for basic setups (2 hours or less), then per hour rate for each addl."}}, {"name": "Certified Payroll Reporting", "category": "Payroll Add-Ons", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "HOURS", "rates": {"wkFlat": 7.5, "wkUnit": NaN, "bwFlat": 15.0, "bwUnit": NaN, "smFlat": 15.0, "smUnit": NaN, "moFlat": 30.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per Hour w/ Flat", "flat": 500.0, "perUnit": 175.0, "notes": null}}, {"name": "Union Reporting", "category": "Payroll Add-Ons", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "HOURS", "rates": {"wkFlat": 7.5, "wkUnit": NaN, "bwFlat": 15.0, "bwUnit": NaN, "smFlat": 15.0, "smUnit": NaN, "moFlat": 30.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per Hour w/ Flat", "flat": 150.0, "perUnit": 150.0, "notes": null}}, {"name": "Courier - UDS (Chicago)", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 15.35, "wkUnit": NaN, "bwFlat": 15.35, "bwUnit": NaN, "smFlat": 15.35, "smUnit": NaN, "moFlat": 15.35, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "USPS Priority - Full Package", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 14.35, "wkUnit": NaN, "bwFlat": 14.35, "bwUnit": NaN, "smFlat": 14.35, "smUnit": NaN, "moFlat": 14.35, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "USPS - Full Package", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 5.0, "wkUnit": NaN, "bwFlat": 5.0, "bwUnit": NaN, "smFlat": 5.0, "smUnit": NaN, "moFlat": 5.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "USPS - Individual EEs", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per each live check", "recurringQtySource": "MANUAL", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 1.0, "bwFlat": NaN, "bwUnit": 1.0, "smFlat": NaN, "smUnit": 1.0, "moFlat": NaN, "moUnit": 1.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "FedEx Overnight", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 50.0, "wkUnit": NaN, "bwFlat": 50.0, "bwUnit": NaN, "smFlat": 50.0, "smUnit": NaN, "moFlat": 50.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "UPS Next Day", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 40.0, "wkUnit": NaN, "bwFlat": 40.0, "bwUnit": NaN, "smFlat": 40.0, "smUnit": NaN, "moFlat": 40.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "UPS Ground", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 14.35, "wkUnit": NaN, "bwFlat": 14.35, "bwUnit": NaN, "smFlat": 14.35, "smUnit": NaN, "moFlat": 14.35, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Time Tracking", "category": "Time & Labor", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Per Timecard EE w/ Flat", "recurringQtySource": "EE_ONLY", "setupQtySource": "EE_ONLY", "rates": {"wkFlat": 13.85, "wkUnit": 0.9, "bwFlat": 30.0, "bwUnit": 1.95, "smFlat": 30.0, "smUnit": 1.95, "moFlat": 60.0, "moUnit": 3.9, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per EE", "flat": 350.0, "perUnit": 18.75, "notes": null}}, {"name": "Hardware Clock", "category": "Time & Labor", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Clock (See Notes)", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "MANUAL", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "Use iSolved's Timeclock Pricing in PartnerHub (+Submit Order Form)", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Scheduling", "category": "Time & Labor", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE after minimum", "recurringQtySource": "EE_ONLY", "setupQtySource": "EE_ONLY", "rates": {"wkFlat": 23.0, "wkUnit": 1.1077, "bwFlat": 50.0, "bwUnit": 2.4, "smFlat": 50.0, "smUnit": 2.4, "moFlat": 100.0, "moUnit": 4.8, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per EE", "flat": 250.0, "perUnit": 15.5, "notes": null}}, {"name": "Geofencing", "category": "Time & Labor", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "FLAT", "rates": {"wkFlat": 12.0, "wkUnit": NaN, "bwFlat": 25.0, "bwUnit": NaN, "smFlat": 25.0, "smUnit": NaN, "moFlat": 50.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 150.0, "perUnit": NaN, "notes": null}}, {"name": "Time Off Tracking", "category": "Time & Labor", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "FLAT", "rates": {"wkFlat": 7.5, "wkUnit": NaN, "bwFlat": 15.0, "bwUnit": NaN, "smFlat": 15.0, "smUnit": NaN, "moFlat": 30.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 50.0, "perUnit": NaN, "notes": null}}, {"name": "Benefits Administration", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE w/ Flat", "recurringQtySource": "EE_ONLY", "setupQtySource": "FLAT", "rates": {"wkFlat": 5.75, "wkUnit": 0.92, "bwFlat": 11.54, "bwUnit": 1.85, "smFlat": 12.5, "smUnit": 2.0, "moFlat": 25.0, "moUnit": 4.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 650.0, "perUnit": NaN, "notes": null}}, {"name": "Benefits Administration Annual Maintenance", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "One-Time (Annual)", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 250.0, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "ACA Monitoring & Reporting", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE", "recurringQtySource": "EE_ONLY", "setupQtySource": "FLAT", "rates": {"wkFlat": NaN, "wkUnit": 0.5, "bwFlat": NaN, "bwUnit": 1.05, "smFlat": NaN, "smUnit": 1.05, "moFlat": NaN, "moUnit": 2.17, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per Company", "flat": 300.0, "perUnit": NaN, "notes": null}}, {"name": "ACA 1094/1095Cs", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Year End", "unitType": "Per Form", "recurringQtySource": "MANUAL", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": 100.0, "yrUnit": 6.0, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Retirement Integration (Payroll Integrations) Tier 1", "category": "Benefits Administration", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "1st Pay of Month", "unitType": "Per Active EE (Tiered) 0-25", "recurringQtySource": "TIERED", "setupQtySource": "NONE", "rates": {"wkFlat": 11.5385, "wkUnit": NaN, "bwFlat": 23.08, "bwUnit": NaN, "smFlat": 25.0, "smUnit": NaN, "moFlat": 50.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Retirement Integration (Payroll Integrations) Tier 2", "category": "Benefits Administration", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "1st Pay of Month", "unitType": "Per Active EE (Tiered) 26-50", "recurringQtySource": "TIERED", "setupQtySource": "NONE", "rates": {"wkFlat": 17.3077, "wkUnit": NaN, "bwFlat": 34.6154, "bwUnit": NaN, "smFlat": 37.5, "smUnit": NaN, "moFlat": 75.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Retirement Integration (Payroll Integrations) Tier 3", "category": "Benefits Administration", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "1st Pay of Month", "unitType": "Per Active EE (Tiered) 51-100", "recurringQtySource": "TIERED", "setupQtySource": "NONE", "rates": {"wkFlat": 23.0769, "wkUnit": NaN, "bwFlat": 46.1538, "bwUnit": NaN, "smFlat": 50.0, "smUnit": NaN, "moFlat": 100.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Retirement Integration (Payroll Integrations) Tier 4", "category": "Benefits Administration", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "1st Pay of Month", "unitType": "Per Active EE (Tiered) 101+", "recurringQtySource": "TIERED", "setupQtySource": "NONE", "rates": {"wkFlat": 34.6154, "wkUnit": NaN, "bwFlat": 69.2308, "bwUnit": NaN, "smFlat": 75.0, "smUnit": NaN, "moFlat": 150.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Employee Navigator Integration", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE", "recurringQtySource": "EE_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 0.46, "bwFlat": NaN, "bwUnit": 0.92, "smFlat": NaN, "smUnit": 1.0, "moFlat": NaN, "moUnit": 2.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "COBRA Administration (iSolved Benefit Services)", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE", "recurringQtySource": "EE_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": 0.23, "bwFlat": NaN, "bwUnit": 0.46, "smFlat": NaN, "smUnit": 0.5, "moFlat": NaN, "moUnit": 1.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "FSA/HSA (iSolved Benefit Services)", "category": "Benefits Administration", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "N/A - iSolved Bills Directly To Client", "unitType": null, "recurringQtySource": "BILLED_DIRECTLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Perform Small Business (Basic Performance Reviews)", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay/Yearly (See Notes)", "unitType": "Per Active EE", "recurringQtySource": "EE_ONLY", "setupQtySource": "HOURS", "rates": {"wkFlat": NaN, "wkUnit": 0.39, "bwFlat": NaN, "bwUnit": 0.77, "smFlat": NaN, "smUnit": 0.84, "moFlat": NaN, "moUnit": 1.67, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "Requires Add-on form submission to iSolved; Minimum 1-year term required. Billing dependent on recurrence. Annual Reviews Only - Charged once per year upfront. Recurring Reviews (Non-Annual) charged monthly.", "setup": {"unitType": "Per Hour (1 Hr Min Charge) if we are setting it up", "flat": NaN, "perUnit": 150.0, "notes": null}}, {"name": "Attract & Hire (iSolved ATS)", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "N/A - iSolved Bills Directly To Client", "unitType": null, "recurringQtySource": "BILLED_DIRECTLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "Requires Add-on form submission to iSolved", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Custom Onboarding", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 500.0, "perUnit": NaN, "notes": null}}, {"name": "Offboarding", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Active EE ", "recurringQtySource": "EE_ONLY", "setupQtySource": "FLAT", "rates": {"wkFlat": NaN, "wkUnit": 0.24, "bwFlat": NaN, "bwUnit": 0.48, "smFlat": NaN, "smUnit": 0.53, "moFlat": NaN, "moUnit": 1.05, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": null, "flat": 250.0, "perUnit": NaN, "notes": null}}, {"name": "Expense Management", "category": "Human Resources", "basicEligible": false, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per EE with Expenses after minimum", "recurringQtySource": "MANUAL", "setupQtySource": "FLAT", "rates": {"wkFlat": 7.5, "wkUnit": 0.46, "bwFlat": 13.85, "bwUnit": 0.92, "smFlat": 15.0, "smUnit": 1.0, "moFlat": 30.0, "moUnit": 2.0, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": "Requires Add-on form submission to iSolved; 25 employee minimum", "setup": {"unitType": "Per Company", "flat": 500.0, "perUnit": NaN, "notes": null}}, {"name": "Custom Reports (Report Writer) - Basic", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 250.0, "otUnit": 250.0}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Custom Reports (Report Writer) - Advanced", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 500.0, "otUnit": 500.0}, "notes": null, "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Custom Workflows", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 150.0, "otUnit": 150.0}, "notes": "If we are configuring/updating workflows that will take time (complex)", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Custom Imports", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "One-Time", "unitType": "Per Hour after minimum", "recurringQtySource": "ONETIME_ONLY", "setupQtySource": "NONE", "rates": {"wkFlat": NaN, "wkUnit": NaN, "bwFlat": NaN, "bwUnit": NaN, "smFlat": NaN, "smUnit": NaN, "moFlat": NaN, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": 150.0, "otUnit": 150.0}, "notes": "If we are creating the import file and not the client. Otherwise, client can be provided with template and create the file themselves at no charge.", "setup": {"unitType": null, "flat": NaN, "perUnit": NaN, "notes": null}}, {"name": "Data Transmissions (FTP)", "category": "Data Services", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Transmission", "recurringQtySource": "MANUAL", "setupQtySource": "FLAT", "rates": {"wkFlat": 6.0, "wkUnit": NaN, "bwFlat": 12.0, "bwUnit": NaN, "smFlat": 12.0, "smUnit": NaN, "moFlat": 25.0, "moUnit": NaN, "qtrFlat": NaN, "qtrUnit": NaN, "yrFlat": NaN, "yrUnit": NaN, "otFlat": NaN, "otUnit": NaN}, "notes": null, "setup": {"unitType": "Per Transmission", "flat": NaN, "perUnit": 250.0, "notes": null}}, {"name": "Paperless", "category": "Delivery", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per package", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 0, "wkUnit": 0, "bwFlat": 0, "bwUnit": 0, "smFlat": 0, "smUnit": 0, "moFlat": 0, "moUnit": 0, "qtrFlat": 0, "qtrUnit": 0, "yrFlat": 0, "yrUnit": 0, "otFlat": 0, "otUnit": 0}, "notes": "No physical delivery \u2014 client receives payroll electronically at no charge", "setup": {"unitType": null, "flat": null, "perUnit": null, "notes": null}}, {"name": "Quarterly Returns", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Quarterly Filing", "unitType": "Per State", "recurringQtySource": "STATES_MINUS1", "setupQtySource": "NONE", "rates": {"wkFlat": null, "wkUnit": null, "bwFlat": null, "bwUnit": null, "smFlat": null, "smUnit": null, "moFlat": null, "moUnit": null, "qtrFlat": 35.95, "qtrUnit": 11.56, "yrFlat": null, "yrUnit": null, "otFlat": null, "otUnit": null}, "notes": "Auto-triggered when client has more than 1 state; first state excluded", "setup": {"unitType": null, "flat": null, "perUnit": null, "notes": null}}, {"name": "Tax Service", "category": "Tax", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "rates": {"wkFlat": 0, "wkUnit": 0, "bwFlat": 0, "bwUnit": 0, "smFlat": 0, "smUnit": 0, "moFlat": 0, "moUnit": 0, "qtrFlat": 0, "qtrUnit": 0, "yrFlat": 0, "yrUnit": 0, "otFlat": 0, "otUnit": 0}, "notes": null, "setup": {"unitType": null, "flat": null, "perUnit": null, "notes": null}}, {"name": "1099 Contractor Pay", "category": "Time & Labor", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "includedNote": "Included with service \u2014 no additional cost", "rates": {"wkFlat": 0, "wkUnit": 0, "bwFlat": 0, "bwUnit": 0, "smFlat": 0, "smUnit": 0, "moFlat": 0, "moUnit": 0, "qtrFlat": 0, "qtrUnit": 0, "yrFlat": 0, "yrUnit": 0, "otFlat": 0, "otUnit": 0}, "notes": null, "setup": {"unitType": null, "flat": null, "perUnit": null, "notes": null}}, {"name": "Job/Labor Allocation", "category": "Time & Labor", "basicEligible": true, "enhancedEligible": true, "billingFrequency": "Every Pay", "unitType": "Per Company/Pay Group", "recurringQtySource": "FLAT", "setupQtySource": "NONE", "includedNote": "Included with service \u2014 no additional cost", "rates": {"wkFlat": 0, "wkUnit": 0, "bwFlat": 0, "bwUnit": 0, "smFlat": 0, "smUnit": 0, "moFlat": 0, "moUnit": 0, "qtrFlat": 0, "qtrUnit": 0, "yrFlat": 0, "yrUnit": 0, "otFlat": 0, "otUnit": 0}, "notes": null, "setup": {"unitType": null, "flat": null, "perUnit": null, "notes": null}}];
 
 const FREQ_PREFIX = {"Weekly":"wk","Bi-Weekly":"bw","Semi-Monthly":"sm","Monthly":"mo","Quarterly":"qtr"};
 
@@ -359,19 +358,26 @@ const SUB_OPTIONS = {
   "Attract & Hire (iSolved ATS)": ["Standalone", "w/ Background Checks"],
   "Time Off Tracking": ["Tracking Only \u2013 No Time Off Requests", "Tracking + Time Off Requests"],
   "Benefits Administration": ["Admin Only", "Admin (+Enrollment)"],
-  "Perform Small Business (Basic Performance Reviews)": ["Annual Reviews Only", "Recurring Reviews"],
-  "Retirement Integration": ["Payroll Integrations", "Human Interest", "PayKonnect", "Data Transmissions (FTP)"],
+  "Retirement Reporting": ["Payroll Integrations", "Human Interest", "PayKonnect", "Data Transmissions (FTP)", "Standalone Reporting"],
+  "Tax Registration": ["Middesk Tax Registration", "Tax Registration (IL)"],
 };
 const BASIC_PLAN_ALLOWED_ADDONS = [
   "Garnishments/Third-Party Payments",
   "Worker's Comp Reporting",
   "General Ledger Reporting",
-  "Retirement Integration",
-  "State Tax Registration (Middesk)",
+  "Retirement Reporting",
+  "Tax Registration",
   "Time Off Tracking",
+  "1099 Contractor Pay",
+  "Job/Labor Allocation",
 ];
-const BASIC_EXEMPT_FROM_WHITELIST = ["Basic Plan", "Enhanced Plan", "W-2s/1099s", "Additional State(s) Tax Payment & Filing", "Quarterly Returns"];
+const BASIC_EXEMPT_FROM_WHITELIST = ["Basic Plan", "Enhanced Plan", "W-2s/1099s", "Additional State(s) Tax Payment & Filing", "Quarterly Returns", "Tax Service"];
+const CAT_DISPLAY = {"Tax": "Payroll & Tax", "Payroll Service Plans": "Payroll & Tax"};
+function catLabel(c) { return CAT_DISPLAY[c] || c; }
 let subTypeSelections = {};
+let planValue = "";
+let planChecked = false;
+let taxServiceChecked = false;
 
 
 function num(x) { return (x === null || x === undefined || isNaN(x)) ? 0 : x; }
@@ -385,11 +391,33 @@ function getRetirementTierService(eeCount) {
   return CATALOG.find(s => s.name === `Retirement Integration (Payroll Integrations) Tier ${tierNum}`);
 }
 
+const STANDALONE_RETIREMENT = {
+  name: "Retirement Reporting", category: "Benefits Administration",
+  basicEligible: true, enhancedEligible: true,
+  billingFrequency: "Every Pay", unitType: "Per Company/Pay Group",
+  recurringQtySource: "FLAT", setupQtySource: "NONE",
+  lineNote: "*Custom reports may incur additional one-time fees",
+  rates: {wkFlat:0,wkUnit:0,bwFlat:0,bwUnit:0,smFlat:0,smUnit:0,moFlat:0,moUnit:0,qtrFlat:0,qtrUnit:0,yrFlat:0,yrUnit:0,otFlat:0,otUnit:0},
+  notes: null, setup: {unitType:null, flat:null, perUnit:null, notes:null}
+};
+
 function resolveService(svcName, inputs) {
-  if (svcName === "Retirement Integration") {
+  if (svcName === "Retirement Reporting") {
+    if (subTypeSelections["Retirement Reporting"] === "Standalone Reporting") return STANDALONE_RETIREMENT;
     return getRetirementTierService(inputs.eeCount);
   }
   return CATALOG.find(s => s.name === svcName);
+}
+
+function displayNameFor(service) {
+  if (service.name.startsWith("Retirement Integration (Payroll Integrations) Tier")) return "Retirement Reporting";
+  return service.name;
+}
+
+function subKeyFor(entry, service) {
+  if (subTypeSelections[entry.name]) return subTypeSelections[entry.name];
+  if (service && subTypeSelections[service.name]) return subTypeSelections[service.name];
+  return "";
 }
 
 // selectedServices: array of {name, manualQty}
@@ -400,9 +428,9 @@ function getInputs() {
   return {
     payFrequency: document.getElementById('payFrequency').value,
     eeCount: parseInt(document.getElementById('eeCount').value) || 0,
-    count1099: parseInt(document.getElementById('count1099').value) || 0,
+    count1099: 0, // folded into eeCount, which now carries total company size
     stateCount: parseInt(document.getElementById('stateCount').value) || 0,
-    plan: document.getElementById('planSelect').value,
+    plan: planValue,
   };
 }
 
@@ -442,6 +470,14 @@ function calcSetupQty(service, inputs, manualQty) {
 function computeLine(entry, inputs, forceService) {
   const service = forceService || resolveService(entry.name, inputs);
   if (!service) return null;
+  if (service.name === "Tax Registration") {
+    const trSub = subTypeSelections["Tax Registration"] || "";
+    if (trSub === "Tax Registration (IL)") {
+      return {service, recurring: null, oneTime: {flat: 600, unit: 0, qty: 1, unitTotal: 0, lineTotal: 600}, isBilledDirectly: false};
+    }
+    return {service, recurring: null, oneTime: null, isBilledDirectly: true};
+  }
+
   const isOneTimeOnly = service.recurringQtySource === "ONETIME_ONLY";
   const isBilledDirectly = service.recurringQtySource === "BILLED_DIRECTLY";
 
@@ -527,7 +563,7 @@ function renderCatalog() {
     if (cat === "Benefits Administration") {
       // collapse 4 retirement tiers into one virtual entry
       items = items.filter(s => !s.name.startsWith("Retirement Integration"));
-      items.push({name: "Retirement Integration", category: cat, isVirtualRetirement: true});
+      items.push({name: "Retirement Reporting", category: cat, isVirtualRetirement: true});
     }
     // Hide auto-managed annual fee items from the picker (they're not manually chosen)
     items = items.filter(s => !["W-2s/1099s","Benefits Administration Annual Maintenance","ACA 1094/1095Cs"].includes(s.name) || cat !== "Tax" && cat !== "Benefits Administration" ? true : false);
@@ -538,16 +574,69 @@ function renderCatalog() {
     // Additional State(s) Tax auto-triggers based on # States, not manually picked
     items = items.filter(s => s.name !== "Additional State(s) Tax Payment & Filing");
     items = items.filter(s => s.name !== "Quarterly Returns");
+    // Tax Service is rendered as a dedicated dropdown row at the top of Payroll & Tax
+    items = items.filter(s => s.name !== "Tax Service");
 
-    if (items.length === 0) return; // skip empty categories (e.g. Payroll Service Plans, now chosen via dropdown)
+    if (cat === "Time & Labor") {
+      const TL_FIRST = ["1099 Contractor Pay", "Job/Labor Allocation"];
+      const rank = (n) => TL_FIRST.includes(n) ? TL_FIRST.indexOf(n) : (n === "Hardware Clock" ? 99 : 50);
+      items = items.slice().sort((a, b) => rank(a.name) - rank(b.name));
+    }
+
+    if (items.length === 0 && cat !== "Tax") return; // skip empty categories
 
     const groupDiv = document.createElement('div');
     groupDiv.className = 'cat-group';
     const h4 = document.createElement('h4');
-    h4.textContent = cat;
+    h4.textContent = catLabel(cat);
     groupDiv.appendChild(h4);
     const itemsDiv = document.createElement('div');
     itemsDiv.className = 'cat-items';
+
+    if (cat === "Tax") {
+      const planRow = document.createElement('div');
+      planRow.className = 'svc-row';
+      planRow.innerHTML = `<input type="checkbox" id="svc_payroll_service_plan" ${(planChecked || planValue !== "") ? "checked" : ""}>
+        <label for="svc_payroll_service_plan">Payroll Service Plan</label>
+        <select id="planSelect" style="margin-left:6px;font-size:11.5px;padding:2px 4px;">
+          <option value="" ${planValue === "" ? "selected" : ""}>- Select Plan -</option>
+          <option value="Basic" ${planValue === "Basic" ? "selected" : ""}>Basic</option>
+          <option value="Enhanced" ${planValue === "Enhanced" ? "selected" : ""}>Enhanced</option>
+        </select>`;
+      planRow.querySelector('select').addEventListener('change', (e) => {
+        planValue = e.target.value;
+        if (planValue !== "") planChecked = true;
+        recalcAll();
+      });
+      planRow.querySelector('input').addEventListener('change', (e) => {
+        planChecked = e.target.checked;
+        if (!planChecked) planValue = "";
+        recalcAll();
+      });
+      itemsDiv.appendChild(planRow);
+
+      const taxSvcVal = subTypeSelections["Tax Service"] || "";
+      const taxRow = document.createElement('div');
+      taxRow.className = 'svc-row';
+      taxRow.innerHTML = `<input type="checkbox" id="svc_tax_service" ${(taxServiceChecked || taxSvcVal !== "") ? "checked" : ""}>
+        <label for="svc_tax_service">Tax Service</label>
+        <select class="sub-option-select" data-svc="Tax Service" style="margin-left:6px;font-size:11.5px;padding:2px 4px;">
+          <option value="" ${taxSvcVal === "" ? "selected" : ""}>- Select Type -</option>
+          <option value="Tax Pay &amp; File" ${taxSvcVal === "Tax Pay & File" ? "selected" : ""}>Tax Pay &amp; File</option>
+          <option value="Non-Tax Pay &amp; File" ${taxSvcVal === "Non-Tax Pay & File" ? "selected" : ""}>Non-Tax Pay &amp; File</option>
+        </select>`;
+      taxRow.querySelector('select').addEventListener('change', (e) => {
+        subTypeSelections["Tax Service"] = e.target.value;
+        if (e.target.value !== "") taxServiceChecked = true;
+        recalcAll();
+      });
+      taxRow.querySelector('input').addEventListener('change', (e) => {
+        taxServiceChecked = e.target.checked;
+        if (!taxServiceChecked) subTypeSelections["Tax Service"] = "";
+        recalcAll();
+      });
+      itemsDiv.appendChild(taxRow);
+    }
 
     items.forEach(svc => {
       const row = document.createElement('div');
@@ -581,7 +670,7 @@ function renderCatalog() {
         if (cat === "Delivery") {
           deliverySelection = e.target.checked ? {name: svc.name} : null;
         } else {
-          const svcName = svc.isVirtualRetirement ? "Retirement Integration" : svc.name;
+          const svcName = svc.isVirtualRetirement ? "Retirement Reporting" : svc.name;
           if (e.target.checked) {
             if (!selectedServices.some(x => x.name === svcName)) selectedServices.push({name: svcName});
           } else {
@@ -608,6 +697,7 @@ function recalcAll() {
   autoManageAnnualFees(inputs);
 
   const allEntries = [...selectedServices];
+  if (subTypeSelections["Tax Service"]) allEntries.unshift({name: "Tax Service", auto: true});
   if (deliverySelection) allEntries.push(deliverySelection);
 
   const tbody = document.getElementById('selectedLinesBody');
@@ -627,9 +717,13 @@ function recalcAll() {
   let needsEnhancedWarning = false;
   let basicViolations = [];
 
-  if (inputs.plan === "Basic") {
-    if (inputs.eeCount > 25) basicViolations.push(`Employee count (${inputs.eeCount}) exceeds the Basic plan limit of 25 EEs`);
-    if (inputs.stateCount > 2) basicViolations.push(`State count (${inputs.stateCount}) exceeds the Basic plan limit of 2 states`);
+  // Until a plan is chosen, assume the client may be on Basic so the upgrade
+  // warnings still surface as services are picked.
+  const planForChecks = inputs.plan || "Basic";
+
+  if (planForChecks === "Basic") {
+    if (inputs.eeCount > 25) basicViolations.push(`Warning: Employee count (${inputs.eeCount}) exceeds the Basic Plan limit of 25 EEs — client will need to be upgraded to Enhanced Plan if not currently on.`);
+    if (inputs.stateCount > 2) basicViolations.push(`Warning: State count (${inputs.stateCount}) exceeds the Basic Plan limit of 2 states — client will need to be upgraded to Enhanced Plan if not currently on.`);
   }
 
   allEntries.forEach(entry => {
@@ -638,19 +732,21 @@ function recalcAll() {
     const result = computeLine(entry, inputs, service);
     if (!result) return;
 
-    if (inputs.plan === "Basic" && service.enhancedEligible && !service.basicEligible) {
+    if (planForChecks === "Basic" && service.enhancedEligible && !service.basicEligible) {
       needsEnhancedWarning = true;
     }
-    if (inputs.plan === "Basic" && !BASIC_EXEMPT_FROM_WHITELIST.includes(entry.name) && service.category !== "Delivery"
-        && !BASIC_PLAN_ALLOWED_ADDONS.includes(entry.name) && !basicViolations.some(v => v.includes(entry.name))) {
-      basicViolations.push(`${entry.name} is not permitted on the Basic plan`);
+    if (planForChecks === "Basic" && !BASIC_EXEMPT_FROM_WHITELIST.includes(entry.name) && service.category !== "Delivery"
+        && !BASIC_PLAN_ALLOWED_ADDONS.includes(entry.name)) {
+      needsEnhancedWarning = true;
     }
 
     if (result.isBilledDirectly) {
       const tr = document.createElement('tr');
-      const subTypeLabelBD = subTypeSelections[entry.name] ? ` <span style="color:var(--text-muted);font-size:11.5px;">— ${subTypeSelections[entry.name]}</span>` : "";
-      tr.innerHTML = `<td>${service.name}${subTypeLabelBD}</td><td>${service.category}</td><td class="num">—</td>
-        <td class="num" colspan="2" style="font-style:italic;color:var(--text-muted);">Billed directly by iSolved — not included in this quote</td>
+      const bdSub = subKeyFor(entry, service);
+      const subTypeLabelBD = bdSub ? ` <span style="color:var(--text-muted);font-size:11.5px;">— ${bdSub}</span>` : "";
+      const billedByName = service.name === "Tax Registration" ? "Middesk" : "iSolved";
+      tr.innerHTML = `<td>${displayNameFor(service)}${subTypeLabelBD}</td><td>${catLabel(service.category)}</td><td class="num">—</td>
+        <td class="num" colspan="2" style="font-style:italic;color:var(--text-muted);">Billed directly by ${billedByName} — not included in this quote</td>
         <td class="num">—</td><td><button class="remove-btn" data-name="${service.name}">✕</button></td>`;
       tbody.appendChild(tr);
       attachRemove(tr, entry, service);
@@ -670,9 +766,12 @@ function recalcAll() {
       const qtyCell = service.recurringQtySource === "MANUAL"
         ? `<input type="number" class="qty-input" min="0" value="${entry.manualQty || 0}" data-name="${service.name}" data-field="manualQty">`
         : (r.qty !== null ? r.qty : "—");
-      const subTypeLabel = subTypeSelections[entry.name] ? ` <span style="color:var(--text-muted);font-size:11.5px;">— ${subTypeSelections[entry.name]}</span>` : "";
-      const displayNameRec = DISPLAY_NAME_OVERRIDES[service.name] || service.name;
-      tr.innerHTML = `<td>${displayNameRec}${subTypeLabel}</td><td>${service.category}</td>
+      const recSub = subKeyFor(entry, service);
+      const subTypeLabel = recSub ? ` <span style="color:var(--text-muted);font-size:11.5px;">— ${recSub}</span>` : "";
+      const displayNameRec = DISPLAY_NAME_OVERRIDES[service.name] || displayNameFor(service);
+      const noteRec = (service.includedNote || service.lineNote)
+        ? ` <span style="color:var(--text-muted);font-size:11px;font-style:italic;">${service.includedNote || service.lineNote}</span>` : "";
+      tr.innerHTML = `<td>${displayNameRec}${subTypeLabel}${noteRec}</td><td>${catLabel(service.category)}</td>
         <td class="num">${qtyCell}</td>
         <td class="num">${fmt(r.flat)}</td>
         <td class="num">${fmt(r.unit)} × ${r.qty !== null ? r.qty : 0} = ${fmt(r.unitTotal)}</td>
@@ -687,13 +786,16 @@ function recalcAll() {
       const o = result.oneTime;
       oneTimeTotal += o.lineTotal;
       const tr = document.createElement('tr');
-      const qtySourceIsManual = service.recurringQtySource === "ONETIME_ONLY" || service.setupQtySource === "MANUAL" || service.setupQtySource === "HOURS";
+      const qtySourceIsManual = service.name !== "Tax Registration" && (service.recurringQtySource === "ONETIME_ONLY" || service.setupQtySource === "MANUAL" || service.setupQtySource === "HOURS");
       const qtyCell = qtySourceIsManual
         ? `<input type="number" class="qty-input" min="0" value="${o.qty}" data-name="${service.name}" data-field="${service.recurringQtySource === 'ONETIME_ONLY' ? 'manualQty' : (service.setupQtySource === 'HOURS' ? 'setupManualQty' : 'setupManualQty')}">`
         : o.qty;
-      const displayName = ONETIME_NAME_OVERRIDES[service.name] || service.name;
-      const subTypeLabelOT = subTypeSelections[entry.name] ? ` <span style="color:var(--text-muted);font-size:11.5px;">— ${subTypeSelections[entry.name]}</span>` : (service.name === "Hardware Clock" ? ` <span style="color:var(--text-muted);font-size:11.5px;">— *Quoted Separately</span>` : "");
-      tr.innerHTML = `<td>${displayName}${subTypeLabelOT}</td><td>${service.category}</td>
+      const displayName = ONETIME_NAME_OVERRIDES[service.name] || displayNameFor(service);
+      const otSub = subKeyFor(entry, service);
+      const subTypeLabelOT = otSub ? ` <span style="color:var(--text-muted);font-size:11.5px;">— ${otSub}</span>` : (service.name === "Hardware Clock" ? ` <span style="color:var(--text-muted);font-size:11.5px;">— *Quoted Separately</span>` : "");
+      const noteOT = (service.includedNote || service.lineNote)
+        ? ` <span style="color:var(--text-muted);font-size:11px;font-style:italic;">${service.includedNote || service.lineNote}</span>` : "";
+      tr.innerHTML = `<td>${displayName}${subTypeLabelOT}${noteOT}</td><td>${catLabel(service.category)}</td>
         <td class="num">${qtyCell}</td>
         <td class="num">${fmt(o.flat)}</td>
         <td class="num">${fmt(o.unit)} × ${o.qty} = ${fmt(o.unitTotal)}</td>
@@ -728,14 +830,20 @@ function recalcAll() {
   document.getElementById('annualValue').textContent = fmt(estimatedAnnualValue);
 
   const warnDiv = document.getElementById('planWarning');
-  let warningHtml = "";
+  const warnings = [];
+  const addWarning = (w) => { if (!warnings.includes(w)) warnings.push(w); };
   if (needsEnhancedWarning) {
-    warningHtml += `<div class="warning-box">⚠ One or more selected services require the <b>Enhanced</b> plan and are not available on Basic.</div>`;
+    addWarning("Warning: Client will need to be upgraded to Enhanced Plan if not currently on.");
   }
-  if (basicViolations.length > 0) {
-    warningHtml += `<div class="warning-box">⚠ Basic plan qualification issue(s):<ul style="margin:4px 0 0 18px;padding:0;">${basicViolations.map(v => `<li>${v}</li>`).join("")}</ul></div>`;
+  basicViolations.forEach(addWarning);
+  const acaSelectedWarn = selectedServices.some(e => e.name === "ACA Monitoring & Reporting");
+  const benAdminSelectedWarn = selectedServices.some(e => e.name === "Benefits Administration");
+  if (acaSelectedWarn && !benAdminSelectedWarn) {
+    addWarning("Warning: Client will need to be on Benefit Administration service if not currently on.");
   }
-  warnDiv.innerHTML = warningHtml;
+  warnDiv.innerHTML = warnings.length
+    ? `<div class="warning-box">${warnings.map(w => `<div style="display:flex;gap:7px;align-items:flex-start;margin:3px 0;"><span style="flex-shrink:0;">\u26A0</span><span>${w}</span></div>`).join("")}</div>`
+    : "";
 
   // re-render catalog checkboxes to reflect auto-added items without losing focus issues
   renderCatalog();
@@ -757,19 +865,31 @@ function recalcAll() {
 function attachRemove(tr, entry, service) {
   const btn = tr.querySelector('.remove-btn');
   if (btn) btn.addEventListener('click', () => {
-    if (deliverySelection && deliverySelection.name === service.name) {
+    const targetName = entry.name || service.name;
+    if (deliverySelection && deliverySelection.name === targetName) {
       deliverySelection = null;
     } else {
-      selectedServices = selectedServices.filter(x => x.name !== service.name);
+      selectedServices = selectedServices.filter(x => x.name !== targetName);
     }
     recalcAll();
   });
 }
 
 // wire top-level input listeners
-['payFrequency','eeCount','count1099','stateCount','planSelect','discountPct'].forEach(id => {
+['payFrequency','eeCount','stateCount','discountPct'].forEach(id => {
   document.getElementById(id).addEventListener('input', recalcAll);
   document.getElementById(id).addEventListener('change', recalcAll);
+});
+
+const REP_PREFILLS = {
+  mark: {name: "Mark Cohen", phone: "(312) 927-3588", email: "mcohen@payprohcm.com"},
+  dan:  {name: "Dan Bratta", phone: "(630) 548-2400", email: "dbratta@payprohcm.com"}
+};
+document.getElementById('repPrefill').addEventListener('change', (e) => {
+  const r = REP_PREFILLS[e.target.value];
+  document.getElementById('repName').value  = r ? r.name  : "";
+  document.getElementById('repPhone').value = r ? r.phone : "";
+  document.getElementById('repEmail').value = r ? r.email : "";
 });
 
 document.getElementById('printBtn').addEventListener('click', () => window.print());
@@ -778,14 +898,16 @@ document.getElementById('resetBtn').addEventListener('click', () => {
     selectedServices = [];
     deliverySelection = null;
     subTypeSelections = {};
-    ['repName','repPhone','repEmail','clientName','clientStreet','clientCityStateZip'].forEach(id => {
+    ['repName','repPhone','repEmail','clientName','clientStreet'].forEach(id => {
       document.getElementById(id).value = "";
     });
+    document.getElementById('repPrefill').value = "";
     document.getElementById('payFrequency').value = "";
     document.getElementById('eeCount').value = 0;
-    document.getElementById('count1099').value = 0;
     document.getElementById('stateCount').value = 1;
-    document.getElementById('planSelect').value = "";
+    planValue = "";
+    planChecked = false;
+    taxServiceChecked = false;
     document.getElementById('discountPct').value = 0;
     document.getElementById('discountType').value = "";
     document.getElementById('discountPeriod').value = "";
