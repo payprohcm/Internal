@@ -108,7 +108,7 @@
     font-size: 13.5px; font-family: inherit; color: var(--text); background: #fff;
   }
   .field-row input:focus, .field-row select:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
-  .static-line { font-size: 13.5px; margin-bottom: 3px; }
+  .static-line { font-size: 11px; margin-bottom: 2px; line-height: 1.45; }
   .static-line.muted { color: var(--text-muted); }
 
   .params-bar {
@@ -189,7 +189,7 @@
     .section-title { font-size: 13px; margin-bottom: 8px; }
     .field-row input, .field-row select { padding: 4px 6px; font-size: 11px; }
     .field-row label { font-size: 9.5px; }
-    .static-line { font-size: 11px; }
+    .static-line { font-size: 9px; }
     .logo-text span { font-size: 16px; }
     .logo-img { height: 32px; }
     .quote-title h1 { font-size: 16px; }
@@ -246,6 +246,7 @@
       <h3>Prepared For</h3>
       <div class="field-row"><label>Company Name</label><input id="clientName" type="text"></div>
       <div class="field-row"><label>Company Address</label><input id="clientStreet" type="text"></div>
+      <div class="field-row"><label>Business Phone</label><input id="clientPhone" type="text"></div>
     </div>
   </div>
 
@@ -898,7 +899,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
     selectedServices = [];
     deliverySelection = null;
     subTypeSelections = {};
-    ['repName','repPhone','repEmail','clientName','clientStreet'].forEach(id => {
+    ['repName','repPhone','repEmail','clientName','clientStreet','clientPhone'].forEach(id => {
       document.getElementById(id).value = "";
     });
     document.getElementById('repPrefill').value = "";
