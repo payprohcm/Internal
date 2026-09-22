@@ -173,7 +173,6 @@
   .summary-table tr.discount td { color: var(--green); }
   .summary-table tr.subtotal-line td { border-top: 1px solid var(--border); padding-top: 8px; }
   .summary-table tr.total-line td { font-weight: 800; font-size: 16px; color: var(--navy); border-top: 2px solid var(--navy); padding-top: 8px; }
-  .summary-table tr.grand-line td { font-weight: 800; font-size: 17px; color: var(--navy); border-top: 2px solid var(--navy); padding-top: 10px; }
 
   .disclaimer { padding: 18px 28px 26px; font-size: 10.5px; color: var(--text-muted); text-align: center; line-height: 1.6; }
 
@@ -199,7 +198,6 @@
     table.lines td { padding: 5px 6px; }
     .summary-table { font-size: 11px; width: 280px; }
     .summary-table tr.total-line td { font-size: 13px; }
-    .summary-table tr.grand-line td { font-size: 14px; }
     .disclaimer { font-size: 8.5px; padding: 10px 20px 14px; }
     .warning-box, #planWarning { display: none !important; }
   }
@@ -332,8 +330,7 @@
       <tr><td>Per Pay Period Subtotal</td><td id="ppSubtotal">$0.00</td></tr>
       <tr class="discount" id="discountRow"><td>Payroll Plan Discount</td><td id="discountAmt">-$0.00</td></tr>
       <tr class="total-line"><td>Per Pay Period Total</td><td id="ppTotal">$0.00</td></tr>
-      <tr class="subtotal-line"><td>One-Time / Setup Fees</td><td id="oneTimeTotal">$0.00</td></tr>
-      <tr class="grand-line"><td>Grand Total</td><td id="grandTotal">$0.00</td></tr>
+      <tr class="total-line"><td>One-Time / Setup Fees</td><td id="oneTimeTotal">$0.00</td></tr>
       <tr class="no-print" id="annualValueRow" style="border-top:1px dashed var(--border);">
         <td style="padding-top:10px;color:var(--text-muted);font-size:12px;">Est. Annual Value <span style="font-style:italic;">(internal only — not shown to client)</span></td>
         <td style="padding-top:10px;font-size:13px;font-weight:700;color:var(--text-muted);" id="annualValue">$0.00</td>
@@ -815,14 +812,12 @@ function recalcAll() {
   const discountPct = parseFloat(document.getElementById('discountPct').value) || 0;
   const discountAmt = planLineTotal * (discountPct / 100);
   const ppTotal = ppSubtotal - discountAmt;
-  const grandTotal = ppTotal + oneTimeTotal;
 
   document.getElementById('ppSubtotal').textContent = fmt(ppSubtotal);
   document.getElementById('discountAmt').textContent = "-" + fmt(discountAmt);
   document.getElementById('discountRow').style.display = discountPct > 0 ? "" : "none";
   document.getElementById('ppTotal').textContent = fmt(ppTotal);
   document.getElementById('oneTimeTotal').textContent = fmt(oneTimeTotal);
-  document.getElementById('grandTotal').textContent = fmt(grandTotal);
 
   const PERIODS_PER_YEAR = {"Weekly": 52, "Bi-Weekly": 26, "Semi-Monthly": 24, "Monthly": 12, "Quarterly": 4};
   const periodsPerYear = PERIODS_PER_YEAR[inputs.payFrequency] || 0;
