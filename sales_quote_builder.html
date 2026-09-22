@@ -200,6 +200,7 @@
     .summary-table tr.total-line td { font-size: 13px; }
     .disclaimer { font-size: 8.5px; padding: 10px 20px 14px; }
     .warning-box, #planWarning { display: none !important; }
+    .remove-btn { display: none !important; }
   }
 </style>
 </head>
@@ -730,10 +731,13 @@ function recalcAll() {
     const result = computeLine(entry, inputs, service);
     if (!result) return;
 
-    if (planForChecks === "Basic" && service.enhancedEligible && !service.basicEligible) {
+    // Data Services never drive the Enhanced-Plan upgrade warning
+    const countsTowardEnhancedWarning = service.category !== "Data Services";
+
+    if (countsTowardEnhancedWarning && planForChecks === "Basic" && service.enhancedEligible && !service.basicEligible) {
       needsEnhancedWarning = true;
     }
-    if (planForChecks === "Basic" && !BASIC_EXEMPT_FROM_WHITELIST.includes(entry.name) && service.category !== "Delivery"
+    if (countsTowardEnhancedWarning && planForChecks === "Basic" && !BASIC_EXEMPT_FROM_WHITELIST.includes(entry.name) && service.category !== "Delivery"
         && !BASIC_PLAN_ALLOWED_ADDONS.includes(entry.name)) {
       needsEnhancedWarning = true;
     }
@@ -774,7 +778,7 @@ function recalcAll() {
         <td class="num">${fmt(r.flat)}</td>
         <td class="num">${fmt(r.unit)} × ${r.qty !== null ? r.qty : 0} = ${fmt(r.unitTotal)}</td>
         <td class="num">${fmt(r.lineTotal)}</td>
-        <td>${(entry.auto || service.name === "Basic Plan" || service.name === "Enhanced Plan") ? "" : `<button class="remove-btn" data-name="${service.name}">✕</button>`}</td>`;
+        <td>${(entry.auto || isAdditionalFeeItem || service.name === "Basic Plan" || service.name === "Enhanced Plan") ? "" : `<button class="remove-btn" data-name="${service.name}">✕</button>`}</td>`;
       const targetBodyRec = isAdditionalFeeItem ? additionalBody : tbody;
       targetBodyRec.appendChild(tr);
       attachRemove(tr, entry, service);
@@ -798,7 +802,7 @@ function recalcAll() {
         <td class="num">${fmt(o.flat)}</td>
         <td class="num">${fmt(o.unit)} × ${o.qty} = ${fmt(o.unitTotal)}</td>
         <td class="num">${fmt(o.lineTotal)}</td>
-        <td>${entry.auto ? "" : `<button class="remove-btn" data-name="${service.name}">✕</button>`}</td>`;
+        <td></td>`;
       const targetBody = ADDITIONAL_FEE_NAMES.includes(service.name) ? additionalBody : oneTimeBody;
       targetBody.appendChild(tr);
       attachRemove(tr, entry, service);
